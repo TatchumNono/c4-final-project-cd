@@ -1,9 +1,15 @@
 import * as AWS from 'aws-sdk'
-import * as AWSXRay from 'aws-xray-sdk'
+//import * as AWSXRay from 'aws-xray-sdk'
 
-const XAWS = AWSXRay.captureAWS(AWS)
+//const XAWS = AWSXRay.captureAWS(AWS)
 
+/*
 const s3 = new XAWS.S3({
+  signatureVersion: 'v4'
+})
+*/
+
+const s3 = new AWS.S3({
   signatureVersion: 'v4'
 })
 
@@ -16,6 +22,6 @@ export const createAttachmentPresignedUrl = (todoId: string) => {
   return s3.getSignedUrl('putObject', {
     Bucket: bucketName,
     Key: todoId,
-    Expires: urlExpiration
+    Expires: Number(urlExpiration)
   })
 }
