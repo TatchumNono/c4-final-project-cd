@@ -8,10 +8,13 @@ plugins:
   - serverless-iam-roles-per-function
   - serverless-plugin-tracing
   - serverless-reqvalidator-plugin
+  - serverless-offline
+  - serverless-dynamodb-local
 
 provider:
   name: aws
   runtime: nodejs12.x
+  #role: arn:aws:iam::870308396011:user/serverless
   lambdaHashingVersion: '20201221'
 
   stage: ${opt:stage, 'dev'}
@@ -27,7 +30,7 @@ provider:
     TODOS_TABLE: Todos-${self:provider.stage}
     TODOS_CREATED_AT_INDEX: CreatedAtIndex
     ATTACHMENT_S3_BUCKET: serverless-c4-todo-images-870308396011-${self:provider.stage}
-    SIGNED_URL_EXPIRATION: 300
+    SIGNED_URL_EXPIRATION: 3000
 
   logs:
     # Enable API Gateway logs
@@ -62,6 +65,17 @@ custom:
         contentType: application/json
         schema: ${file(models/update-todo-model.json)}
 
+  serverless-offline:
+    port: 3003
+
+  dynamodb:
+    start:
+      #port: 8000
+      inMemory: true
+      migrate: true
+    stages:
+      - dev
+
 functions:
   Auth:
     handler: src/lambda/auth/auth0Authorizer.handler
@@ -95,6 +109,7 @@ functions:
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below.
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
+    tracing: Active
     events:
       - http:
           method: post
@@ -132,7 +147,7 @@ functions:
     iamRoleStatements:
       - Effect: Allow
         Action:
-          - dynamodb:PutItem
+          - dynamodb:UpdateItem
         Resource: arn:aws:dynamodb:${self:provider.region}:*:table/${self:provider.environment.TODOS_TABLE}
 
   # TODO: Configure this function

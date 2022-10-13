@@ -7,6 +7,8 @@ import { TodoUpdate } from '../models/TodoUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
+AWSXRay.setContextMissingStrategy(() => {})
+
 //const logger = createLogger('TodosAccess')
 
 // TODO: Implement the dataLayer logic
@@ -58,20 +60,25 @@ export class TodoAccess {
     return todo
   }
 
-  async updateTodo(todoUpdate: TodoUpdate, todoId: string) {
+  async updateTodo(todoUpdate: TodoUpdate, todoId: string, userId: string) {
     const params = {
       TableName: this.todosTable,
       IndexName: this.todosTableIndex,
       Key: {
-        todoId: todoId
+        todoId: todoId,
+        userId: userId
       },
-      UpdateExpression: 'set name = :x, dueDate = :y, done = :z',
+      UpdateExpression: 'set #nom = :x, dueDate = :y, done = :z',
       ExpressionAttributeValues: {
         ':x': todoUpdate.name,
         ':y': todoUpdate.dueDate,
         ':z': todoUpdate.done
+      },
+      ExpressionAttributeNames: {
+        '#nom': 'name'
       }
     }
+    //name is a reserved keyword in dynamodb so had to use ExpressionAttributeNames
 
     await this.docClient.update(params).promise()
   }

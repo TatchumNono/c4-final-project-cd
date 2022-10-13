@@ -41,9 +41,10 @@ export const getTodosForUser = async (userId: string): Promise<TodoItem[]> => {
 
 export const updateTodo = async (
   todoUpdate: UpdateTodoRequest,
-  todoId: string
+  todoId: string,
+  userId: string
 ) => {
-  await todoAccess.updateTodo(todoUpdate, todoId)
+  await todoAccess.updateTodo(todoUpdate, todoId, userId)
 }
 
 export const deleteTodo = async (todoId: string, userId: string) => {
