@@ -1,15 +1,13 @@
 import * as AWS from 'aws-sdk'
 import * as AWSXRay from 'aws-xray-sdk'
 import { DocumentClient } from 'aws-sdk/clients/dynamodb'
-//import { createLogger } from '../utils/logger'
+import { createLogger } from '../utils/logger'
 import { TodoItem } from '../models/TodoItem'
 import { TodoUpdate } from '../models/TodoUpdate'
 
 const XAWS = AWSXRay.captureAWS(AWS)
 
-AWSXRay.setContextMissingStrategy(() => {})
-
-//const logger = createLogger('TodosAccess')
+const logger = createLogger('getAllTodos')
 
 // TODO: Implement the dataLayer logic
 
@@ -29,6 +27,10 @@ export class TodoAccess {
       })
       .promise()
 
+    logger.log('Success', {
+      result: result
+    })
+
     const items = result.Items
     return items as TodoItem[]
   }
@@ -45,6 +47,10 @@ export class TodoAccess {
       })
       .promise()
 
+    logger.log('Get all todos success', {
+      result: result
+    })
+
     const items = result.Items
     return items as TodoItem[]
   }
@@ -56,6 +62,10 @@ export class TodoAccess {
         Item: todo
       })
       .promise()
+
+    logger.log('Create todo successfull', {
+      data: todo
+    })
 
     return todo
   }
@@ -81,6 +91,10 @@ export class TodoAccess {
     //name is a reserved keyword in dynamodb so had to use ExpressionAttributeNames
 
     await this.docClient.update(params).promise()
+
+    logger.log('Update successfull', {
+      data: todoUpdate
+    })
   }
 
   async deleteTodo(todoId: string, userId: string) {
@@ -93,7 +107,9 @@ export class TodoAccess {
     }
     const result = await this.docClient.delete(params).promise()
 
-    console.log(result)
+    logger.log('Delete successfull', {
+      result: result
+    })
   }
 }
 

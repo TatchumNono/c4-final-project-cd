@@ -14,7 +14,6 @@ plugins:
 provider:
   name: aws
   runtime: nodejs12.x
-  #role: arn:aws:iam::870308396011:user/serverless
   lambdaHashingVersion: '20201221'
 
   stage: ${opt:stage, 'dev'}
@@ -109,7 +108,6 @@ functions:
   # To validate incoming HTTP requests, we have provided the request schemas in function definition below.
   CreateTodo:
     handler: src/lambda/http/createTodo.handler
-    tracing: Active
     events:
       - http:
           method: post
