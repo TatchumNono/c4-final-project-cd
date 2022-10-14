@@ -13,7 +13,7 @@ const logger = createLogger('getAllTodos')
 
 export class TodoAccess {
   constructor(
-    private readonly docClient: DocumentClient = createDynamoDBClient(),
+    private readonly docClient: DocumentClient = new XAWS.DynamoDB.DocumentClient(),
     private readonly todosTable = process.env.TODOS_TABLE,
     private readonly todosTableIndex = process.env.TODOS_CREATED_AT_INDEX
   ) {}
@@ -113,6 +113,7 @@ export class TodoAccess {
   }
 }
 
+/*
 const createDynamoDBClient = () => {
   if (process.env.IS_OFFLINE) {
     console.log('Creating a local DynamoDB instance')
@@ -124,3 +125,4 @@ const createDynamoDBClient = () => {
 
   return new XAWS.DynamoDB.DocumentClient()
 }
+*/
